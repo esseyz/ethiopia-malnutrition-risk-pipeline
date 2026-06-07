@@ -24,37 +24,46 @@ This project builds a reproducible ML pipeline on real-world DHS microdata to:
 
 | Model | CV Macro F1 | Test Macro F1 | ROC-AUC (OvR) |
 |-------|------------|---------------|---------------|
-| Logistic Regression | 0.399 ± 0.013 | 0.388 | 0.597 |
-| **Random Forest** | **0.412 ± 0.006** | **0.391** | **0.631** |
+| RF Baseline (7 features) | 0.412 ± 0.006 | 0.391 | 0.631 |
+| RF Tuned (10 features) | 0.439 ± 0.008 | 0.431 | 0.647 |
+| **XGBoost (10 features)** | **0.434 ± 0.013** | **0.434** | **0.648** |
 
-> **Note on performance:** Macro F1 of ~0.41 reflects the inherent difficulty 
-> of three-class separation using 6 sociodemographic features with small 
-> individual effect sizes (Cramér's V: 0.10–0.14). The model demonstrates 
-> meaningful discriminative ability (ROC-AUC 0.63) and prioritises recall 
-> on the Severe class — the clinically critical outcome.
+> **Note on performance:** Macro F1 of ~0.43 reflects the inherent difficulty 
+> of three-class separation on survey microdata with small individual effect 
+> sizes (Cramér's V: 0.10–0.14). The XGBoost model demonstrates a **+11% 
+> improvement** over the baseline RF after feature expansion and tuning. 
+> ROC-AUC of 0.648 confirms meaningful discriminative ability beyond chance.
 
 ---
 
 ## Key Findings
 
-### 1. Child Age Dominates (Feature Importance: 46.9%)
-Stunting is a cumulative deficit. Older children have had longer exposure 
-to risk factors — the model captures this growth trajectory signal more 
-strongly than any sociodemographic variable.
+### 1. Child Age is the Dominant Predictor (SHAP: 0.312)
+Stunting is a cumulative nutritional deficit. Older children have had longer 
+exposure to risk factors — this growth trajectory signal is 3× stronger 
+than any other feature.
 
-### 2. Maternal Age is Second (26.5%)
-Younger mothers face compounded disadvantages — lower nutritional knowledge, 
-reduced economic autonomy, and potential adolescent growth competition with 
-the fetus.
+### 2. Maternal Age & Antenatal Visits are Critical (SHAP: 0.105, 0.085)
+Younger mothers with fewer antenatal care visits face compounded 
+disadvantages. ANC visits rank 3rd in SHAP importance — a directly 
+actionable finding for healthcare policy.
 
-### 3. Compounded Rural Poverty is the Strongest Policy Signal
-Children who are simultaneously **rural and in the lowest two wealth quintiles** 
-face a severe stunting rate of **21.1%** — nearly double the 11.4% rate 
-in all other groups. This group represents **51.9% of the survey sample**.
+### 3. Geography Matters Beyond Rural/Urban
+Four regional dummies appear in the SHAP top 15. **Afar** has the highest 
+severe stunting rate at 24.2% with 87.9% rural poverty — the most 
+concentrated vulnerability in the dataset. **Addis Ababa** has just 2.5% 
+severe stunting and 0% rural poverty — a 10× gap within one country.
 
-### 4. Maternal Education Shows the Steepest Gradient
-Severe stunting among children of uneducated mothers (19.5%) is **6× higher** 
-than among children of highly educated mothers (3.1%).
+### 4. Compounded Rural Poverty remains the strongest policy signal
+Children simultaneously rural and in the lowest two wealth quintiles 
+face 21.1% severe stunting — nearly double the 11.4% in all other groups. 
+This group represents 51.9% of the survey sample.
+
+### 5. Amhara's hidden burden
+Amhara has the highest *total* stunting rate at **46.8%** 
+(moderate + severe combined) — nearly half of all children. 
+This is masked by a moderate severe rate when looking at 
+severe stunting alone.
 
 ---
 
